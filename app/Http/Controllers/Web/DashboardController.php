@@ -26,7 +26,7 @@ class DashboardController extends Controller
         // Estadísticas básicas del usuario
         $stats = [
             'login_count' => $user->tokens()->count(),
-            'account_type' => $user->isSocialUser() ? 'Social' : 'Local',
+            'account_type' => $user->isOAuthUser() ? 'Social' : 'Local',
             'member_since' => $user->created_at->diffForHumans(),
             'last_login' => $user->updated_at->diffForHumans(),
         ];

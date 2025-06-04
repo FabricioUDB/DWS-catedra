@@ -8,10 +8,15 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'name',
         'email',
@@ -23,38 +28,55 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_active',
     ];
 
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'password' => 'hashed',
         'is_active' => 'boolean',
     ];
 
     /**
-     * Obtener la URL del avatar del usuario
+     * Verificar si el usuario se registró via OAuth
      */
-    public function getAvatarUrlAttribute()
+    public function isOAuthUser(): bool
     {
-        if ($this->avatar) {
-            return $this->avatar;
-        }
-
-        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=007bff&color=fff';
+        return !empty($this->google_id) || !empty($this->facebook_id);
     }
 
     /**
-     * Verificar si el usuario se registró usando OAuth
+     * Obtener el proveedor de autenticación
      */
-    public function isSocialUser()
+    public function getAuthProvider(): string
     {
-        return in_array($this->provider, ['google', 'facebook']);
+        if ($this->google_id) return 'google';
+        if ($this->facebook_id) return 'facebook';
+        return 'email';
     }
 
     /**
-     * Verificar si el usuario está activo
+     * Verificar si tiene password (usuarios de email)
+     */
+    public function hasPassword(): bool
+    {
+        return !empty($this->password);
+    }
+
+    /**
+     * Scope para usuarios activos
      */
     public function scopeActive($query)
     {
@@ -62,10 +84,21 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * Verificar si el usuario puede iniciar sesión
+     * Scope para usuarios OAuth
      */
-    public function canLogin()
+    public function scopeOAuth($query)
     {
-        return $this->is_active;
+        return $query->where(function($q) {
+            $q->whereNotNull('google_id')
+              ->orWhereNotNull('facebook_id');
+        });
+    }
+
+    /**
+     * Scope para usuarios por proveedor
+     */
+    public function scopeByProvider($query, $provider)
+    {
+        return $query->where('provider', $provider);
     }
 }
