@@ -419,9 +419,10 @@
         /* Separador */
         .divider {
             text-align: center;
-            margin: 20px 0;
+            margin: 25px 0;
             position: relative;
             color: #666;
+            font-size: 14px;
         }
 
         .divider::before {
@@ -432,11 +433,15 @@
             right: 0;
             height: 1px;
             background: #e9ecef;
+            z-index: 1;
         }
 
         .divider span {
             background: white;
-            padding: 0 15px;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+            display: inline-block;
         }
     </style>
 </head>

@@ -65,8 +65,8 @@
                         </div>
                     </form>
 
-                    <div class="divider">
-                        <span>O regístrate con</span>
+                    <div class="text-center my-4">
+                        <span style="color: #666; font-size: 14px;">O regístrate con</span>
                     </div>
 
                     <div class="social-buttons">
