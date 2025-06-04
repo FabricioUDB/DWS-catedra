@@ -65,9 +65,10 @@ Route::post('/register', function () {
     $user = \App\Models\User::create([
         'name' => $validated['name'],
         'email' => $validated['email'],
-        'password' => Hash::make($validated['password']),
+        'password' => Hash::make($validated['password']), // Solo aquí se encripta
         'provider' => 'local',
         'is_active' => true,
+        'email_verified_at' => now(), // Verificar email automáticamente
     ]);
 
     Auth::login($user);
