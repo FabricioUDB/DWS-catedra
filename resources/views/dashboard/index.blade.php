@@ -1,75 +1,114 @@
+
 @extends('layouts.app')
 
 @section('content')
 <style>
     body {
         font-family: 'Nunito', sans-serif;
+        background-color: #f8fafc;
     }
+
+    .card-title i {
+        margin-right: 8px;
+    }
+
+    .dashboard-section {
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.1);
+    }
+
     .dashboard-card {
-        min-height: 135px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
+        border: none;
+        border-radius: 1rem;
+        padding: 1rem 1.5rem;
+        transition: 0.3s ease-in-out;
     }
-    .dashboard-card h5 {
-        font-weight: 600;
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
     }
-    .dashboard-card .fs-3 {
-        font-size: 1.75rem !important;
-    }
+
     .dashboard-button {
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        text-align: center;
+        margin-top: 1rem;
     }
+
+    .dashboard-button .btn {
+        font-size: 1.1rem;
+        padding: 0.75rem 2rem;
+        border-radius: 999px;
+    }
+
+    .logout-button {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+    }
+
+    .table th, .table td {
+        vertical-align: middle;
+    }
+
+    .badge {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.7rem;
+        border-radius: 0.5rem;
+    }
+
 </style>
 
-<div class="container py-4">
-    <h2 class="mb-4 text-primary fw-bold">
-        💧 Bienvenido, {{ Auth::user()->name }} a <span class="text-uppercase">ADACECAM</span>
-    </h2>
+<div class="container py-4 position-relative">
+    <!-- Botón Cerrar Sesión -->
+    <form method="POST" action="{{ route('logout') }}" class="logout-button">
+        @csrf
+        <button type="submit" class="btn btn-outline-danger rounded-pill fw-semibold">
+            🔒 Cerrar sesión
+        </button>
+    </form>
 
-    <div class="row g-4 mb-5">
-        <div class="col-md-3">
-            <div class="card text-center border-primary shadow-sm dashboard-card">
-                <div class="card-body">
-                    <h5 class="card-title">💵 Saldo Actual</h5>
-                    <p class="card-text fs-3 text-success mb-0">$0.00</p>
+    <div class="dashboard-section">
+        <!-- Encabezado -->
+        <h2 class="mb-4 text-primary fw-bold">
+            💧 Bienvenido, {{ Auth::user()->name }} a <span class="text-uppercase">ADACECAM</span>
+        </h2>
+
+        <!-- Tarjetas de resumen -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="card dashboard-card bg-light text-success text-center">
+                    <h5 class="card-title"><i class="bi bi-cash-coin"></i>Saldo Actual</h5>
+                    <h3 class="fw-bold">$0.00</h3>
                     <small>Sin deudas</small>
                 </div>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-center border-danger shadow-sm dashboard-card">
-                <div class="card-body">
-                    <h5 class="card-title">📑 Recibos Pendientes</h5>
-                    <p class="card-text fs-3 text-danger mb-0">2</p>
+            <div class="col-md-3">
+                <div class="card dashboard-card bg-light text-danger text-center">
+                    <h5 class="card-title"><i class="bi bi-receipt"></i>Recibos Pendientes</h5>
+                    <h3 class="fw-bold">2</h3>
                     <small>¡Paga antes del 10 de junio!</small>
                 </div>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-center border-success shadow-sm dashboard-card">
-                <div class="card-body">
-                    <h5 class="card-title">🧾 Último Pago</h5>
-                    <p class="card-text fs-6 mb-0">05/06/2025</p>
+            <div class="col-md-3">
+                <div class="card dashboard-card bg-light text-info text-center">
+                    <h5 class="card-title"><i class="bi bi-calendar-check"></i>Último Pago</h5>
+                    <p class="mb-0">05/06/2025</p>
                     <small>#Recibo 2025-045</small>
                 </div>
             </div>
+            <div class="col-md-3 dashboard-button">
+                <a href="#" class="btn btn-primary w-100 fw-semibold rounded-pill">
+                    💳 Pagar Recibo
+                </a>
+            </div>
         </div>
-        <div class="col-md-3 dashboard-button">
-            <a href="#" class="btn btn-lg btn-primary w-100 fw-semibold rounded-pill">
-                💳 Pagar Recibo
-            </a>
-        </div>
-    </div>
 
-    <div class="mt-4">
+        <!-- Historial de Pagos -->
         <h4 class="mb-3 fw-bold">📋 Historial de Pagos</h4>
         <div class="table-responsive">
-            <table class="table table-bordered align-middle table-hover shadow-sm">
+            <table class="table table-hover align-middle shadow-sm bg-white rounded">
                 <thead class="table-light">
                     <tr>
                         <th>#</th>
