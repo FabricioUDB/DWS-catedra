@@ -31,13 +31,12 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
-// En config/services.php
     'google' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('GOOGLE_REDIRECT_URI'),
         'guzzle' => [
-            'verify' => false, // Para desarrollo local
+            'verify' => env('APP_ENV') === 'production' ? true : false,
         ],
     ],
 
@@ -46,7 +45,7 @@ return [
         'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
         'redirect' => env('FACEBOOK_REDIRECT_URI'),
         'guzzle' => [
-            'verify' => false, // Para desarrollo local
+            'verify' => env('APP_ENV') === 'production' ? true : false,
         ],
     ],
 ];
