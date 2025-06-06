@@ -1,5 +1,9 @@
 <?php
 
+require_once __DIR__.'/../vendor/autoload.php';
+
+use Illuminate\Foundation\Application;
+
 /*
 |--------------------------------------------------------------------------
 | Create The Application
@@ -11,7 +15,7 @@
 |
 */
 
-$app = new Illuminate\Foundation\Application(
+$app = new Application(
     $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
 );
 
@@ -27,18 +31,18 @@ $app = new Illuminate\Foundation\Application(
 */
 
 $app->singleton(
-    Illuminate\Contracts\Http\Kernel::class,
-    App\Http\Kernel::class
+    'Illuminate\Contracts\Http\Kernel',
+    'App\Http\Kernel'
 );
 
 $app->singleton(
-    Illuminate\Contracts\Console\Kernel::class,
-    App\Console\Kernel::class
+    'Illuminate\Contracts\Console\Kernel',
+    'App\Console\Kernel'
 );
 
 $app->singleton(
-    Illuminate\Contracts\Debug\ExceptionHandler::class,
-    App\Exceptions\Handler::class
+    'Illuminate\Contracts\Debug\ExceptionHandler',
+    'App\Exceptions\Handler'
 );
 
 /*
