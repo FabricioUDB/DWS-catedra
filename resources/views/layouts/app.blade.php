@@ -507,7 +507,7 @@
         </div>
     </div>
 
-    <!-- Navegación principal SIN "Mi Cuenta" -->
+    <!-- Navegación principal SIN "Mi Cuenta" - SOLO ICONOS CAMBIADOS -->
     <nav class="main-nav">
         <div class="container">
             <div class="row align-items-center">
@@ -523,12 +523,12 @@
                         <ul class="navbar-nav d-flex flex-row justify-content-end align-items-center">
                             <li class="nav-item">
                                 <a class="nav-link @if(Request::routeIs('dashboard')) active @endif" href="{{ route('dashboard') }}">
-                                    <i class="bi bi-house"></i> Dashboard
+                                    <i class="bi bi-box-arrow-in-right"></i> Dashboard
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="#funciones">
-                                    <i class="bi bi-gear"></i> Funciones
+                                    <i class="bi bi-person-plus"></i> Funciones
                                 </a>
                             </li>
                             <li class="nav-item">
