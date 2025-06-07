@@ -7,6 +7,7 @@
     <title>ADACECAM - @yield('title', 'Sistema')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         :root {
             --adacecam-blue: #4A90E2;
@@ -62,6 +63,26 @@
             cursor: pointer;
         }
 
+        /* Usuario autenticado en header */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
         /* Navegación principal */
         .main-nav {
             background: white;
@@ -105,6 +126,36 @@
             align-items: center;
             justify-content: center;
             margin-right: 10px;
+        }
+
+        /* Dropdown personalizado */
+        .user-dropdown {
+            position: relative;
+        }
+
+        .user-dropdown .dropdown-menu {
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            margin-top: 5px;
+        }
+
+        .user-dropdown .dropdown-item {
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+
+        .user-dropdown .dropdown-item:hover {
+            background-color: var(--adacecam-light-gray);
+            color: var(--adacecam-blue);
+        }
+
+        .user-dropdown .dropdown-item.text-danger:hover {
+            background-color: #f8d7da;
+            color: #721c24;
         }
 
         /* Formularios */
@@ -460,9 +511,20 @@
                 </div>
                 <div class="col-md-6">
                     <div class="header-icons justify-content-end">
-                        <i class="fas fa-user"></i>
-                        <i class="fas fa-heart"></i>
-                        <span>$0.00</span>
+                        @auth
+                            <!-- Usuario autenticado -->
+                            <div class="user-info">
+                                <div class="user-avatar">
+                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                </div>
+                                <span>{{ Auth::user()->name }}</span>
+                            </div>
+                        @else
+                            <!-- Usuario no autenticado -->
+                            <i class="fas fa-user"></i>
+                            <i class="fas fa-heart"></i>
+                            <span>$0.00</span>
+                        @endauth
                     </div>
                 </div>
             </div>
@@ -474,29 +536,100 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-3">
-                    <a href="/" class="logo">
+                    <a href="@auth{{ route('dashboard') }}@else/@endauth" class="logo">
                         <i class="fas fa-tint"></i>
                         <span>ADACECAM</span>
                     </a>
                 </div>
                 <div class="col-md-9">
-                    <ul class="navbar-nav d-flex flex-row justify-content-end">
-                        <li class="nav-item">
-                            <a class="nav-link @if(Request::is('login') || Request::is('/')) active @endif" href="/login">Iniciar sesión</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#funciones">Funciones</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#equipos">Nuestros equipos</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#blog">Blog</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#contacto">Contáctanos</a>
-                        </li>
-                    </ul>
+                    @auth
+                        <!-- Menú para usuario autenticado -->
+                        <ul class="navbar-nav d-flex flex-row justify-content-end align-items-center">
+                            <li class="nav-item">
+                                <a class="nav-link @if(Request::routeIs('dashboard')) active @endif" href="{{ route('dashboard') }}">
+                                    <i class="bi bi-house"></i> Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#funciones">
+                                    <i class="bi bi-gear"></i> Funciones
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#equipos">
+                                    <i class="bi bi-people"></i> Nuestros equipos
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#blog">
+                                    <i class="bi bi-journal-text"></i> Blog
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#contacto">
+                                    <i class="bi bi-telephone"></i> Contáctanos
+                                </a>
+                            </li>
+                            <!-- Dropdown del usuario -->
+                            <li class="nav-item dropdown user-dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-person-circle"></i> Mi Cuenta
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('dashboard.profile') }}">
+                                            <i class="bi bi-person"></i> Mi Perfil
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('dashboard.security') }}">
+                                            <i class="bi bi-shield-lock"></i> Seguridad
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('recibo.pagar') }}">
+                                            <i class="bi bi-credit-card"></i> Pagar Recibo
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form method="POST" action="{{ route('logout') }}" class="d-inline">
+                                            @csrf
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    @else
+                        <!-- Menú para usuario no autenticado -->
+                        <ul class="navbar-nav d-flex flex-row justify-content-end">
+                            <li class="nav-item">
+                                <a class="nav-link @if(Request::is('login') || Request::is('/')) active @endif" href="{{ route('login') }}">
+                                    <i class="bi bi-box-arrow-in-right"></i> Iniciar sesión
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @if(Request::is('register')) active @endif" href="{{ route('register') }}">
+                                    <i class="bi bi-person-plus"></i> Registrarse
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#funciones">Funciones</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#equipos">Nuestros equipos</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#blog">Blog</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#contacto">Contáctanos</a>
+                            </li>
+                        </ul>
+                    @endauth
                 </div>
             </div>
         </div>
@@ -505,13 +638,19 @@
     <!-- Alertas -->
     @if(session('success'))
         <div class="container mt-3">
-            <div class="alert alert-success">{{ session('success') }}</div>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         </div>
     @endif
 
     @if(session('error'))
         <div class="container mt-3">
-            <div class="alert alert-danger">{{ session('error') }}</div>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         </div>
     @endif
 
@@ -542,7 +681,7 @@
                 <div class="col-md-3">
                     <h6>Servicios</h6>
                     <ul>
-                        <li><a href="#">Pago en línea</a></li>
+                        <li><a href="{{ route('recibo.pagar') }}">Pago en línea</a></li>
                         <li><a href="#">Solicitud de servicios</a></li>
                         <li><a href="#">Reportar problemas</a></li>
                     </ul>
@@ -550,10 +689,10 @@
                 <div class="col-md-3">
                     <h6>Cooperativa</h6>
                     <ul>
-                        <li><a href="#">Funciones</a></li>
-                        <li><a href="#">Nuestros equipos</a></li>
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">Contáctanos</a></li>
+                        <li><a href="#funciones">Funciones</a></li>
+                        <li><a href="#equipos">Nuestros equipos</a></li>
+                        <li><a href="#blog">Blog</a></li>
+                        <li><a href="#contacto">Contáctanos</a></li>
                     </ul>
                     <div class="social-icons">
                         <a href="#" class="facebook"><i class="fab fa-facebook-f"></i></a>
@@ -568,5 +707,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     @yield('scripts')
+    @stack('scripts')
 </body>
 </html>

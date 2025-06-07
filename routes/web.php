@@ -32,13 +32,30 @@ Route::prefix('auth')->group(function () {
 });
 
 // Rutas protegidas por autenticación
-Route::middleware(['auth', 'verified'])->group(function () {
-    // Dashboard y ajustes
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
-    Route::get('/settings', [DashboardController::class, 'settings'])->name('settings');
-    Route::get('/security', [DashboardController::class, 'settings'])->name('security');
+Route::middleware(['auth', 'verified', 'user.active'])->group(function () {
 
+    // === DASHBOARD Y GESTIÓN DE PERFIL ===
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // NUEVA RUTA: Dashboard actualizado después de pago
+    Route::get('/dashboard/actualizar', [DashboardController::class, 'actualizarDespuesPago'])->name('dashboard.actualizar');
+
+    // Perfil del usuario
+    Route::get('/dashboard/profile', [DashboardController::class, 'profile'])->name('dashboard.profile');
+    Route::post('/dashboard/profile', [DashboardController::class, 'updateProfile'])->name('dashboard.update-profile');
+
+    // Configuraciones de seguridad
+    Route::get('/dashboard/security', [DashboardController::class, 'security'])->name('dashboard.security');
+    Route::post('/dashboard/password', [DashboardController::class, 'updatePassword'])->name('dashboard.update-password');
+    Route::post('/dashboard/revoke-tokens', [DashboardController::class, 'revokeAllTokens'])->name('dashboard.revoke-tokens');
+    Route::post('/dashboard/deactivate', [DashboardController::class, 'deactivateAccount'])->name('dashboard.deactivate');
+
+    // === NUEVA FUNCIONALIDAD: DESCARGA DE PDF POR FACTURA ===
+    Route::get('/dashboard/descargar-pdf/{facturaId}', [DashboardController::class, 'descargarPDF'])
+         ->name('dashboard.descargar-pdf')
+         ->where('facturaId', '[0-9]+'); // Solo acepta números
+
+    // === RUTAS DE PAGOS ===
     // Paso 1: Validar recibo
     Route::get('/pagar-recibo', function () {
         return view('dashboard.pagar');
@@ -52,20 +69,44 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Paso 3: Procesar pago
     Route::post('/procesar-pago', [ReciboController::class, 'procesarPago'])->name('recibo.procesar');
 
-    // ✅ Nueva Ruta: Generar PDF del recibo
+    // PDF del recibo general (para pagos recién realizados)
     Route::get('/recibo/pdf', [ReciboController::class, 'generarPDF'])->name('recibo.pdf');
 
-    // Desvincular cuentas sociales
+    // === GESTIÓN DE CUENTAS SOCIALES ===
     Route::delete('/auth/google/unlink', [SocialAuthController::class, 'unlinkGoogle'])->name('auth.google.unlink');
     Route::delete('/auth/facebook/unlink', [SocialAuthController::class, 'unlinkFacebook'])->name('auth.facebook.unlink');
+
+    // === RUTAS ADICIONALES (compatibilidad con código existente) ===
+    Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
+    Route::get('/settings', [DashboardController::class, 'security'])->name('settings');
+    Route::get('/security', [DashboardController::class, 'security'])->name('security');
 });
+
+// === API ROUTES ===
+Route::middleware(['auth:sanctum', 'user.active'])->prefix('api/v1')->group(function () {
+    Route::get('/dashboard/stats', [DashboardController::class, 'apiStats'])->name('api.dashboard.stats');
+});
+
+// === RUTAS DE VERIFICACIÓN PÚBLICA ===
+// Para verificar autenticidad de PDFs sin autenticación
+Route::get('/verificar/{idTransaccion}', function ($idTransaccion) {
+    // Aquí puedes implementar la lógica de verificación
+    return view('verificacion.documento', compact('idTransaccion'));
+})->name('verificar.documento')->where('idTransaccion', '[A-Za-z0-9\-#]+');
 
 // Autenticación (Laravel Breeze / UI)
 require __DIR__.'/auth.php';
 
-// Página principal
+// === PÁGINA PRINCIPAL ===
 Route::get('/', function () {
     return Auth::check()
         ? redirect()->route('dashboard')
         : view('auth.login');
 })->name('home');
+
+// === RUTAS DE FALLBACK PARA ERRORES ===
+Route::fallback(function () {
+    return Auth::check()
+        ? redirect()->route('dashboard')->with('error', 'Página no encontrada. Redirigido al dashboard.')
+        : redirect()->route('home')->with('error', 'Página no encontrada.');
+});
