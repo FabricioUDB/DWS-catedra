@@ -1,29 +1,27 @@
 <?php
 
-use App\Http\Controllers\Web\SocialAuthController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Web\SocialAuthController;
+use App\Http\Controllers\Web\DashboardController;
+use App\Http\Controllers\Web\ReciboController;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - OAuth Routes
+| Web Routes
 |--------------------------------------------------------------------------
 */
 
-// Rutas OAuth - SIN middleware problemático
+// Rutas OAuth (Google / Facebook)
 Route::prefix('auth')->group(function () {
-
-    // Google OAuth
     Route::get('/google', [SocialAuthController::class, 'redirectToGoogle'])
         ->name('auth.google')
-        ->withoutMiddleware(['auth', 'verified']); // Excluir middlewares problemáticos
+        ->withoutMiddleware(['auth', 'verified']);
 
     Route::get('/google/callback', [SocialAuthController::class, 'handleGoogleCallback'])
         ->name('auth.google.callback')
-        ->withoutMiddleware(['auth', 'verified', 'cors']); // Excluir CORS también
+        ->withoutMiddleware(['auth', 'verified', 'cors']);
 
-    // Facebook OAuth
     Route::get('/facebook', [SocialAuthController::class, 'redirectToFacebook'])
         ->name('auth.facebook')
         ->withoutMiddleware(['auth', 'verified']);
@@ -35,31 +33,39 @@ Route::prefix('auth')->group(function () {
 
 // Rutas protegidas por autenticación
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', [App\Http\Controllers\Web\DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/profile', [App\Http\Controllers\Web\DashboardController::class, 'profile'])->name('profile');
-    Route::get('/settings', [App\Http\Controllers\Web\DashboardController::class, 'settings'])->name('settings');
-    Route::get('/security', [App\Http\Controllers\Web\DashboardController::class, 'settings'])->name('security'); // ✅ Agregada
+    // Dashboard y ajustes
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
+    Route::get('/settings', [DashboardController::class, 'settings'])->name('settings');
+    Route::get('/security', [DashboardController::class, 'settings'])->name('security');
 
-    // Rutas para desvincular cuentas
+    // Paso 1: Validar recibo
+    Route::get('/pagar-recibo', function () {
+        return view('dashboard.pagar');
+    })->name('recibo.pagar');
+
+    Route::post('/validar-recibo', [ReciboController::class, 'validar'])->name('recibo.validar');
+
+    // Paso 2: Formulario de tarjeta
+    Route::get('/pago-tarjeta', [ReciboController::class, 'formularioPago'])->name('recibo.pago');
+
+    // Paso 3: Procesar pago
+    Route::post('/procesar-pago', [ReciboController::class, 'procesarPago'])->name('recibo.procesar');
+
+    // ✅ Nueva Ruta: Generar PDF del recibo
+    Route::get('/recibo/pdf', [ReciboController::class, 'generarPDF'])->name('recibo.pdf');
+
+    // Desvincular cuentas sociales
     Route::delete('/auth/google/unlink', [SocialAuthController::class, 'unlinkGoogle'])->name('auth.google.unlink');
     Route::delete('/auth/facebook/unlink', [SocialAuthController::class, 'unlinkFacebook'])->name('auth.facebook.unlink');
-
-    // ✅ Ruta para cerrar sesión
-    Route::post('/logout', function (Request $request) {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect('/login');
-    })->name('logout');
 });
 
-// Rutas de autenticación básica (si tienes Laravel Breeze/UI instalado)
+// Autenticación (Laravel Breeze / UI)
 require __DIR__.'/auth.php';
 
-// Ruta principal - mostrar login o redirigir al dashboard
+// Página principal
 Route::get('/', function () {
-    if (Auth::check()) {
-        return redirect()->route('dashboard');
-    }
-    return view('auth.login');
+    return Auth::check()
+        ? redirect()->route('dashboard')
+        : view('auth.login');
 })->name('home');

@@ -1,4 +1,3 @@
-
 @extends('layouts.app')
 
 @section('content')
@@ -57,7 +56,6 @@
         padding: 0.4rem 0.7rem;
         border-radius: 0.5rem;
     }
-
 </style>
 
 <div class="container py-4 position-relative">
@@ -99,7 +97,7 @@
                 </div>
             </div>
             <div class="col-md-3 dashboard-button">
-                <a href="#" class="btn btn-primary w-100 fw-semibold rounded-pill">
+                <a href="{{ route('recibo.pagar') }}" class="btn btn-primary w-100 fw-semibold rounded-pill">
                     💳 Pagar Recibo
                 </a>
             </div>
@@ -134,7 +132,7 @@
                         <td>$5.00</td>
                         <td><span class="badge bg-danger">Pendiente</span></td>
                         <td>-</td>
-                        <td><a href="#" class="btn btn-sm btn-primary rounded-pill">Pagar ahora</a></td>
+                        <td><a href="{{ route('recibo.pagar') }}" class="btn btn-sm btn-primary rounded-pill">Pagar ahora</a></td>
                     </tr>
                 </tbody>
             </table>
