@@ -63,13 +63,20 @@
             cursor: pointer;
         }
 
-        /* Usuario autenticado en header */
+        /* Usuario autenticado en header CON DROPDOWN */
         .user-info {
             display: flex;
             align-items: center;
             gap: 10px;
             color: white;
             font-size: 14px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .user-info:hover {
+            transform: scale(1.02);
         }
 
         .user-avatar {
@@ -81,6 +88,52 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .user-info:hover .user-avatar {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+
+        /* Dropdown en header azul */
+        .header-user-dropdown {
+            position: relative;
+        }
+
+        .header-user-dropdown .dropdown-menu {
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            margin-top: 5px;
+            min-width: 200px;
+        }
+
+        .header-user-dropdown .dropdown-item {
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .header-user-dropdown .dropdown-item:hover {
+            background-color: var(--adacecam-light-gray);
+            color: var(--adacecam-blue);
+        }
+
+        .header-user-dropdown .dropdown-item.text-danger:hover {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .header-user-dropdown .dropdown-header {
+            padding: 10px 20px;
+            color: var(--adacecam-blue);
+            font-weight: bold;
+            border-bottom: 1px solid #eee;
         }
 
         /* Navegación principal */
@@ -126,36 +179,6 @@
             align-items: center;
             justify-content: center;
             margin-right: 10px;
-        }
-
-        /* Dropdown personalizado */
-        .user-dropdown {
-            position: relative;
-        }
-
-        .user-dropdown .dropdown-menu {
-            border: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border-radius: 10px;
-            margin-top: 5px;
-        }
-
-        .user-dropdown .dropdown-item {
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.2s;
-        }
-
-        .user-dropdown .dropdown-item:hover {
-            background-color: var(--adacecam-light-gray);
-            color: var(--adacecam-blue);
-        }
-
-        .user-dropdown .dropdown-item.text-danger:hover {
-            background-color: #f8d7da;
-            color: #721c24;
         }
 
         /* Formularios */
@@ -379,94 +402,6 @@
             color: #666;
         }
 
-        /* Password input with toggle */
-        .password-input-container {
-            position: relative;
-        }
-
-        .password-toggle {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: #6c757d;
-            cursor: pointer;
-            z-index: 10;
-        }
-
-        .password-toggle:hover {
-            color: var(--adacecam-blue);
-        }
-
-        /* Password strength meter */
-        .password-strength-bar {
-            width: 100%;
-            height: 4px;
-            background: #e9ecef;
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .password-strength-fill {
-            height: 100%;
-            width: 0%;
-            transition: all 0.3s ease;
-            background: #e9ecef;
-        }
-
-        .password-strength-fill.weak {
-            background: #dc3545;
-        }
-
-        .password-strength-fill.medium {
-            background: #ffc107;
-        }
-
-        .password-strength-fill.strong {
-            background: #17a2b8;
-        }
-
-        .password-strength-fill.very-strong {
-            background: #28a745;
-        }
-
-        .password-strength-text {
-            font-size: 12px;
-            color: #6c757d;
-        }
-
-        .password-strength-text.weak {
-            color: #dc3545;
-        }
-
-        .password-strength-text.medium {
-            color: #ffc107;
-        }
-
-        .password-strength-text.strong {
-            color: #17a2b8;
-        }
-
-        .password-strength-text.very-strong {
-            color: #28a745;
-        }
-
-        /* Password match indicator */
-        .password-match-text {
-            font-size: 12px;
-            color: #6c757d;
-        }
-
-        .password-match-text.match {
-            color: #28a745;
-        }
-
-        .password-match-text.no-match {
-            color: #dc3545;
-        }
-
         /* Separador */
         .divider {
             text-align: center;
@@ -512,12 +447,53 @@
                 <div class="col-md-6">
                     <div class="header-icons justify-content-end">
                         @auth
-                            <!-- Usuario autenticado -->
-                            <div class="user-info">
-                                <div class="user-avatar">
-                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                            <!-- Usuario autenticado con dropdown funcional -->
+                            <div class="dropdown header-user-dropdown">
+                                <div class="user-info" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <div class="user-avatar">
+                                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                    </div>
+                                    <span>{{ Auth::user()->name }}</span>
+                                    <i class="fas fa-chevron-down" style="font-size: 12px; margin-left: 5px;"></i>
                                 </div>
-                                <span>{{ Auth::user()->name }}</span>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <h6 class="dropdown-header">
+                                            <i class="bi bi-person-circle"></i>
+                                            {{ Auth::user()->name }}
+                                        </h6>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('dashboard.profile') }}">
+                                            <i class="bi bi-person"></i> Mi Perfil
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('dashboard.security') }}">
+                                            <i class="bi bi-shield-lock"></i> Seguridad
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('recibo.pagar') }}">
+                                            <i class="bi bi-credit-card"></i> Pagar Recibo
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#">
+                                            <i class="bi bi-bell"></i> Notificaciones
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form method="POST" action="{{ route('logout') }}" class="d-inline">
+                                            @csrf
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
                             </div>
                         @else
                             <!-- Usuario no autenticado -->
@@ -531,7 +507,7 @@
         </div>
     </div>
 
-    <!-- Navegación principal -->
+    <!-- Navegación principal SIN "Mi Cuenta" -->
     <nav class="main-nav">
         <div class="container">
             <div class="row align-items-center">
@@ -543,7 +519,7 @@
                 </div>
                 <div class="col-md-9">
                     @auth
-                        <!-- Menú para usuario autenticado -->
+                        <!-- Menú para usuario autenticado SIN botón Mi Cuenta -->
                         <ul class="navbar-nav d-flex flex-row justify-content-end align-items-center">
                             <li class="nav-item">
                                 <a class="nav-link @if(Request::routeIs('dashboard')) active @endif" href="{{ route('dashboard') }}">
@@ -570,38 +546,6 @@
                                     <i class="bi bi-telephone"></i> Contáctanos
                                 </a>
                             </li>
-                            <!-- Dropdown del usuario -->
-                            <li class="nav-item dropdown user-dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="bi bi-person-circle"></i> Mi Cuenta
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <a class="dropdown-item" href="{{ route('dashboard.profile') }}">
-                                            <i class="bi bi-person"></i> Mi Perfil
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="{{ route('dashboard.security') }}">
-                                            <i class="bi bi-shield-lock"></i> Seguridad
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="{{ route('recibo.pagar') }}">
-                                            <i class="bi bi-credit-card"></i> Pagar Recibo
-                                        </a>
-                                    </li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <form method="POST" action="{{ route('logout') }}" class="d-inline">
-                                            @csrf
-                                            <button type="submit" class="dropdown-item text-danger">
-                                                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
-                                            </button>
-                                        </form>
-                                    </li>
-                                </ul>
-                            </li>
                         </ul>
                     @else
                         <!-- Menú para usuario no autenticado -->
@@ -624,7 +568,7 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link @if(Request::routeIs('blog.noticias')) active @endif" href="{{ route('blog.noticias') }}">
-                                    Blog
+                                    <i class="bi bi-journal-text"></i> Blog
                                 </a>
                             </li>
                             <li class="nav-item">

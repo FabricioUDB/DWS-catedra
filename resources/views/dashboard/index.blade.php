@@ -83,7 +83,8 @@
         font-size: 0.9rem;
     }
 
-    .logout-section {
+    /* Sección de estado solo con indicador "En línea" */
+    .status-section {
         display: flex;
         flex-direction: column;
         align-items: flex-end;
@@ -110,33 +111,6 @@
         0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
         70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
         100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
-    }
-
-    .btn-logout {
-        background: linear-gradient(135deg, #dc3545, #c82333);
-        color: white;
-        border: none;
-        border-radius: 25px;
-        padding: 0.5rem 1.5rem;
-        font-size: 0.9rem;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        box-shadow: 0 2px 10px rgba(220, 53, 69, 0.3);
-    }
-
-    .btn-logout:hover {
-        background: linear-gradient(135deg, #c82333, #a71e2a);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
-        color: white;
-    }
-
-    .btn-logout:active {
-        transform: translateY(0);
     }
 
     .table th, .table td {
@@ -170,7 +144,7 @@
             text-align: center;
         }
 
-        .logout-section {
+        .status-section {
             align-items: center;
         }
     }
@@ -178,7 +152,7 @@
 
 <div class="container py-4">
     <div class="dashboard-section">
-        <!-- Header mejorado con usuario y logout -->
+        <!-- Header mejorado con usuario (sin botón logout) -->
         <div class="dashboard-header">
             <div class="user-welcome">
                 <div class="user-avatar-large">
@@ -190,18 +164,12 @@
                 </div>
             </div>
 
-            <div class="logout-section">
+            <!-- Solo indicador de estado "En línea" -->
+            <div class="status-section">
                 <div class="user-status">
                     <span class="status-indicator"></span>
                     <span>En línea</span>
                 </div>
-                <form method="POST" action="{{ route('logout') }}" class="d-inline">
-                    @csrf
-                    <button type="submit" class="btn-logout">
-                        <i class="bi bi-box-arrow-right"></i>
-                        Cerrar sesión
-                    </button>
-                </form>
             </div>
         </div>
 
