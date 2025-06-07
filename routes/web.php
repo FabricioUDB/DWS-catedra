@@ -104,6 +104,10 @@ Route::get('/', function () {
         : view('auth.login');
 })->name('home');
 
+// RUTA DEL BLOG
+
+Route::get('/blog', [App\Http\Controllers\Web\BlogController::class, 'noticias'])->name('blog.noticias');
+
 // === RUTAS DE FALLBACK PARA ERRORES ===
 Route::fallback(function () {
     return Auth::check()

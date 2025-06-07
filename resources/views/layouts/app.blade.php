@@ -561,7 +561,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#blog">
+                                <a class="nav-link @if(Request::routeIs('blog.noticias')) active @endif" href="{{ route('blog.noticias') }}">
                                     <i class="bi bi-journal-text"></i> Blog
                                 </a>
                             </li>
@@ -623,7 +623,9 @@
                                 <a class="nav-link" href="#equipos">Nuestros equipos</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#blog">Blog</a>
+                                <a class="nav-link @if(Request::routeIs('blog.noticias')) active @endif" href="{{ route('blog.noticias') }}">
+                                    Blog
+                                </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="#contacto">Contáctanos</a>
@@ -691,7 +693,7 @@
                     <ul>
                         <li><a href="#funciones">Funciones</a></li>
                         <li><a href="#equipos">Nuestros equipos</a></li>
-                        <li><a href="#blog">Blog</a></li>
+                        <li><a href="{{ route('blog.noticias') }}">Blog</a></li>
                         <li><a href="#contacto">Contáctanos</a></li>
                     </ul>
                     <div class="social-icons">
